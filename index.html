@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>30秒サイズ診断｜KOKOZO</title>
+<meta name="description" content="5つの質問に答えるだけ。あなたに合うシルエットと、採寸で見るべき場所がわかります。">
+<style>
+  :root{
+    --navy:#17243F;
+    --navy-up:#1E2E4D;
+    --kinari:#EFEAE0;
+    --brass:#B08D4F;
+    --sumi:#1F1D1A;
+    --mincho:"Yu Mincho",YuMincho,"Hiragino Mincho ProN","Hiragino Mincho Pro","Noto Serif JP",serif;
+    --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic",YuGothic,"Noto Sans JP",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--navy);
+    color:var(--kinari);
+    font-family:var(--gothic);
+    min-height:100vh;min-height:100dvh;
+    display:flex;justify-content:center;
+    padding:28px 20px 48px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .col{width:100%;max-width:460px}
+
+  .mark{font-size:13px;letter-spacing:.34em;color:var(--brass);margin:0 0 40px}
+  .h1{font-family:var(--mincho);font-size:29px;line-height:1.75;font-weight:600;margin:0 0 24px}
+  .lead{font-size:16px;line-height:2;color:rgba(239,234,224,.82);margin:0}
+  .note{font-size:14px;line-height:1.9;color:rgba(239,234,224,.55);margin:18px 0 0}
+
+  .btn{
+    display:block;width:100%;font-family:var(--gothic);font-size:17px;
+    padding:19px 20px;border:none;border-radius:2px;
+    background:var(--brass);color:var(--navy);font-weight:600;
+    cursor:pointer;letter-spacing:.04em;text-align:center;text-decoration:none;
+  }
+  .btn-ghost{
+    display:block;width:100%;font-family:var(--gothic);font-size:16px;
+    padding:17px 20px;border:1px solid rgba(239,234,224,.35);border-radius:2px;
+    background:transparent;color:var(--kinari);cursor:pointer;text-align:center;text-decoration:none;
+  }
+  .btn:focus-visible,.btn-ghost:focus-visible,.opt:focus-visible,.back:focus-visible,.tbtn:focus-visible{
+    outline:2px solid var(--brass);outline-offset:3px;
+  }
+
+  .ruler-wrap{margin:0 0 34px}
+  .ruler{display:flex;align-items:flex-end;justify-content:space-between;height:16px}
+  .tick{width:1px;display:block}
+  .ruler-nums{display:flex;justify-content:space-between;margin:6px 0 0;padding-left:16%;
+    font-size:11px;letter-spacing:.1em;font-variant-numeric:tabular-nums}
+  .counter{font-size:13px;color:rgba(239,234,224,.5);margin:14px 0 0;letter-spacing:.08em}
+
+  .q{font-family:var(--mincho);font-size:23px;line-height:1.85;font-weight:600;margin:0 0 26px}
+  .opt{
+    display:flex;align-items:center;gap:14px;width:100%;text-align:left;
+    font-family:var(--gothic);font-size:17px;line-height:1.6;
+    padding:19px 18px;margin:0 0 11px;
+    background:var(--navy-up);color:var(--kinari);
+    border:1px solid rgba(239,234,224,.16);border-radius:2px;cursor:pointer;
+  }
+  .opt.on{border-color:var(--brass);background:rgba(176,141,79,.16)}
+  .opt-bar{width:2px;height:20px;background:rgba(239,234,224,.25);flex:none}
+  .opt.on .opt-bar{background:var(--brass)}
+  .back{background:none;border:none;color:rgba(239,234,224,.55);
+    font-family:var(--gothic);font-size:15px;padding:14px 0;margin-top:14px;cursor:pointer}
+
+  .card{
+    background:var(--kinari);color:var(--sumi);border-radius:2px;
+    padding:32px 24px;margin:0 0 20px;animation:reveal .45s ease-out both;
+  }
+  @keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .card-label{font-size:12px;letter-spacing:.3em;color:var(--brass);margin:0 0 14px}
+  .type{font-family:var(--mincho);font-size:30px;line-height:1.5;font-weight:600;margin:0 0 6px}
+  .type-lead{font-size:15px;color:rgba(31,29,26,.65);margin:0 0 26px;line-height:1.8}
+  hr.rule{height:1px;background:rgba(31,29,26,.15);margin:26px 0;border:none}
+  .sec{font-size:13px;letter-spacing:.16em;color:var(--brass);margin:0 0 10px}
+  .sec-h{font-family:var(--mincho);font-size:20px;font-weight:600;margin:0 0 10px;line-height:1.6}
+  .p{font-size:16px;line-height:2.05;margin:0;color:rgba(31,29,26,.88)}
+  .count{font-family:var(--mincho);font-size:22px;line-height:1.7;font-weight:600;margin:0 0 8px}
+  .count em{font-style:normal;font-size:38px;color:var(--brass);padding:0 4px}
+  .points{list-style:none;padding:0;margin:0}
+  .points li{display:flex;gap:12px;align-items:flex-start;font-size:16px;line-height:1.9;
+    padding:9px 0;border-bottom:1px solid rgba(31,29,26,.1)}
+  .points li:last-child{border-bottom:none}
+  .points i{width:2px;height:17px;background:var(--brass);flex:none;margin-top:7px}
+  .plan{display:flex;align-items:baseline;gap:12px;margin:0 0 10px;flex-wrap:wrap}
+  .plan-name{font-size:15px;letter-spacing:.16em;font-weight:700}
+  .plan-price{font-family:var(--mincho);font-size:26px;font-weight:600}
+  .prices{font-size:14px;line-height:1.9;color:rgba(31,29,26,.55);margin:14px 0 0}
+  .cta-note{font-size:14px;line-height:1.9;color:rgba(239,234,224,.6);margin:16px 0 0;text-align:center}
+  .tbtn{background:none;border:none;color:rgba(239,234,224,.55);
+    font-family:var(--gothic);font-size:14px;cursor:pointer;padding:10px 6px}
+  .row{display:flex;justify-content:center;gap:8px;margin-top:6px}
+  .copy{font-size:12px;letter-spacing:.06em;color:rgba(239,234,224,.32);
+    text-align:center;margin:44px 0 0}
+  .sp{height:32px}
+  @media (prefers-reduced-motion: reduce){.card{animation:none}}
+</style>
+</head>
+<body>
+<div class="col" id="app"></div>
+
+<script>
+/* ------------------------------------------------------------------
+   KOKOZO 30秒サイズ診断
+   公開前に、下の2つのURLを差し替えてください。
+------------------------------------------------------------------ */
+var LINE_TALK_URL = "https://line.me/R/oaMessage/@kokozo/?"; // 1:1トークを開くURL
+var RESERVE_URL   = "#";                                     // 出張採寸の予約フォームURL
+/* ---------------------------------------------------------------- */
+
+var QUESTIONS = [
+  { id:"q1", text:"今のスーツで、いちばん気になるところは。", options:[
+    {v:"kata",    label:"肩が余る、浮いて見える"},
+    {v:"hara",    label:"お腹まわりがきつい"},
+    {v:"take",    label:"袖丈や着丈が合っていない"},
+    {v:"motatsu", label:"全体的にもたついて見える"}]},
+  { id:"q2", text:"10年前と比べて、体は。", options:[
+    {v:"same",   label:"ほとんど変わっていない"},
+    {v:"little", label:"少し増えた（5kgくらいまで）"},
+    {v:"mid",    label:"はっきり増えた（5〜10kg）"},
+    {v:"big",    label:"かなり変わった（10kg以上）"}]},
+  { id:"q3", text:"体つきに近いのは。", options:[
+    {v:"slim",  label:"細身、胸は薄いほう"},
+    {v:"std",   label:"標準的"},
+    {v:"solid", label:"肩幅や胸まわりががっちり"},
+    {v:"belly", label:"お腹まわりに厚みがある"}]},
+  { id:"q4", text:"スーツを着るのは。", options:[
+    {v:"daily", label:"ほぼ毎日"},
+    {v:"week",  label:"週に2〜3日"},
+    {v:"month", label:"月に数回"},
+    {v:"rare",  label:"式典など、特別な日だけ"}]},
+  { id:"q5", text:"人前に立つ機会は。", options:[
+    {v:"stage",  label:"挨拶や式典で、壇上に立つことが多い"},
+    {v:"face",   label:"来客や会食で、人と向き合うことが多い"},
+    {v:"inside", label:"社内が中心で、外に出る機会は少ない"},
+    {v:"future", label:"これから増えていきそう"}]}
+];
+
+var TYPES = {
+  stage:{ name:"壇上のここぞ", lead:"見られる位置に立つ機会が多い方です。",
+    body:"壇上や来賓席では、上半身の見え方がほぼすべてを決めます。座っている時間も長く、背中と肩まわりのシワが人の目に入ります。写真にも残ります。ここは既製品でいちばん差が出る場所です。",
+    plan:"KOKOZO", price:"128,000円",
+    planWhy:"写真と記録に残る場面が多いため、生地の格と仕立ての精度が効いてきます。"},
+  face:{ name:"向き合うここぞ", lead:"人と正面から向き合う機会が多い方です。",
+    body:"至近距離で見られる場面が多いので、大きなシルエットよりも、衿の収まり、袖口の見え方、生地の表情といった近くで気づかれる部分が効いてきます。堅すぎない印象づくりが大事です。",
+    plan:"SIGNATURE", price:"88,000円",
+    planWhy:"近くで見られる機会が多い方には、生地の表情がわかる中位グレードが向いています。"},
+  daily:{ name:"毎日のここぞ", lead:"スーツが日常着になっている方です。",
+    body:"週に何日も着るなら、格好よさより先に、耐久性と回復力のある生地を選ぶべきです。着る日数が多い方ほど、1着あたりの負担は下がります。2着を交互に回すと寿命が倍近く伸びます。",
+    plan:"SIGNATURE", price:"88,000円",
+    planWhy:"着用日数が多いため、生地の耐久性が最終的な費用対効果を決めます。"},
+  future:{ name:"これからのここぞ", lead:"着る機会が、これから増えていく方です。",
+    body:"今はまだ着る日が限られていても、立場が変わると人前に立つ日は急に増えます。最初の一着は、幅広い場面で使える濃紺の無地から始めるのが確実です。",
+    plan:"STANDARD", price:"68,000円",
+    planWhy:"使う場面がこれから決まっていくため、まず万能な一着から始めるのが堅実です。"}
+};
+
+var SILHOUETTE = {
+  slim:{ name:"ソフトシェイプ", desc:"肩は自然に、胸に少しだけ厚みを持たせます。薄さを目立たせず、頼りない印象を避けます。"},
+  std:{ name:"ナチュラル・ストレート", desc:"体の線に沿わせすぎず、まっすぐ落とします。年齢に対して自然に見える形です。"},
+  solid:{ name:"ストラクチャード", desc:"肩の構築感を活かし、ウエストをわずかに絞ります。上半身の厚みが重く見えないよう整えます。"},
+  belly:{ name:"クラシック・ストレート", desc:"ウエストを絞らず、前身頃をまっすぐ落とします。お腹まわりを一番目立たせない形です。"}
+};
+
+var REASON = {
+  kata:"既製品は、決められた肩幅の型から選ぶしかありません。肩は体のなかで最も個人差が出る場所で、ここが合っていないと、どれだけ良い生地でも野暮ったく見えます。そして肩は、買った後からいちばん直しにくい箇所でもあります。",
+  hara:"既製品は胸まわりのサイズで全体が決まります。胸に合わせるとウエストが窮屈になり、ウエストに合わせると全体が大きくなる。この矛盾は、既製品の構造上どうしても解けません。あなたのせいではありません。",
+  take:"袖丈と着丈は、身長ではなく腕の付き方と姿勢で決まります。既製品は身長で一律に決めているので、標準からわずかに外れるだけで合わなくなります。",
+  motatsu:"もたついて見える原因は、たいていサイズではなく背中です。年齢とともに背中がわずかに丸くなると、既製品では肩甲骨の下に横ジワが出ます。ここは採寸でしか直せません。"
+};
+
+var POINT_Q1 = {
+  kata:"肩幅と、肩の傾き（なで肩・いかり肩）",
+  hara:"ウエストと、前身頃の落ち方",
+  take:"袖丈と着丈のバランス、腕の付き位置",
+  motatsu:"背中の丸みと、横ジワの出かた"
+};
+var POINT_Q3 = {
+  slim:"胸まわりのゆとりと、衿の収まり",
+  std:"首まわりと、衿が浮かないか",
+  solid:"胸まわりと背幅、腕の可動",
+  belly:"ウエストと股上、パンツ前面の落ち方"
+};
+var POINT_Q2 = {
+  same:"姿勢の癖と、肩の左右差",
+  little:"ウエストに残すお直し代",
+  mid:"胸とウエストの差寸の取り直し",
+  big:"胸・胴・肩を、一度ゼロから設計し直す前提"
+};
+
+var BASE = { daily:30, week:20, month:10, rare:5 };
+var ADD  = { stage:10, face:5, inside:0, future:2 };
+
+var state = { screen:"start", step:0, answers:{}, pending:null, copied:false };
+var app = document.getElementById("app");
+
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+  return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+function diagnose(a){
+  var key;
+  if (a.q5 === "stage") key = "stage";
+  else if (a.q5 === "face") key = "face";
+  else if (a.q5 === "inside") key = (a.q4 === "daily" || a.q4 === "week") ? "daily" : "future";
+  else key = "future";
+
+  var pts = [POINT_Q1[a.q1], POINT_Q3[a.q3], POINT_Q2[a.q2]].filter(function(p,i,arr){
+    return arr.indexOf(p) === i;
+  });
+
+  return {
+    type: TYPES[key],
+    sil: SILHOUETTE[a.q3],
+    points: pts,
+    reason: REASON[a.q1],
+    count: BASE[a.q4] + ADD[a.q5]
+  };
+}
+
+function rulerHTML(step, total){
+  var ticks = 41, filled = Math.round((step/total)*(ticks-1)), h = "";
+  for (var i=0;i<ticks;i++){
+    var major = (i % 8 === 0);
+    var col = (i <= filled) ? "var(--brass)" : "rgba(239,234,224,0.22)";
+    h += '<span class="tick" style="height:'+(major?16:8)+'px;background:'+col+'"></span>';
+  }
+  var nums = "";
+  for (var n=1;n<=5;n++){
+    nums += '<span style="color:'+(n<=step?"var(--brass)":"rgba(239,234,224,0.3)")+'">'+n+'</span>';
+  }
+  return '<div class="ruler-wrap">'
+    + '<div class="ruler" aria-hidden="true">'+h+'</div>'
+    + '<div class="ruler-nums" aria-hidden="true">'+nums+'</div>'
+    + '<p class="counter">質問 '+Math.min(step+1,total)+' / '+total+'</p>'
+    + '</div>';
+}
+
+function render(){
+  var h = "";
+
+  if (state.screen === "start"){
+    h = '<p class="mark">KOKOZO</p>'
+      + '<h1 class="h1">30秒で、<br>あなたに合う一着が<br>わかります。</h1>'
+      + '<p class="lead">5つの質問に答えるだけです。今のスーツがなぜ合っていないのか、その理由と、採寸で見るべき場所をお伝えします。</p>'
+      + '<div class="sp"></div>'
+      + '<button class="btn" data-act="start">診断をはじめる</button>'
+      + '<p class="note">名前や連絡先の入力はありません。診断のあとに、こちらから営業のご連絡をすることもありません。</p>';
+  }
+
+  else if (state.screen === "q"){
+    var q = QUESTIONS[state.step];
+    h = rulerHTML(state.step, QUESTIONS.length)
+      + '<h2 class="q">'+esc(q.text)+'</h2>';
+    q.options.forEach(function(o){
+      var on = (state.pending === o.v) || (!state.pending && state.answers[q.id] === o.v);
+      h += '<button class="opt'+(on?" on":"")+'" data-act="choose" data-v="'+o.v+'">'
+         + '<span class="opt-bar"></span>'+esc(o.label)+'</button>';
+    });
+    h += '<button class="back" data-act="back">← 前の質問へ</button>';
+  }
+
+  else {
+    var r = diagnose(state.answers);
+    var pts = r.points.map(function(p){ return '<li><i></i>'+esc(p)+'</li>'; }).join("");
+    h = '<div class="card">'
+      + '<p class="card-label">診断の結果</p>'
+      + '<h2 class="type">「'+esc(r.type.name)+'」型</h2>'
+      + '<p class="type-lead">'+esc(r.type.lead)+'</p>'
+      + '<p class="p">'+esc(r.type.body)+'</p>'
+      + '<hr class="rule">'
+      + '<p class="sec">年間の「ここぞ」</p>'
+      + '<p class="count">およそ<em>'+r.count+'</em>回</p>'
+      + '<p class="p">「ここぞ」は、人生に数回しかない日のことではありません。挨拶に立つ日、人を迎える日、写真に残る日。数えてみると、一年にこれだけあります。</p>'
+      + '<hr class="rule">'
+      + '<p class="sec">おすすめのシルエット</p>'
+      + '<h3 class="sec-h">'+esc(r.sil.name)+'</h3>'
+      + '<p class="p">'+esc(r.sil.desc)+'</p>'
+      + '<hr class="rule">'
+      + '<p class="sec">既製品が合わない理由</p>'
+      + '<p class="p">'+esc(r.reason)+'</p>'
+      + '<hr class="rule">'
+      + '<p class="sec">採寸で、特に見てほしいところ</p>'
+      + '<ul class="points">'+pts+'</ul>'
+      + '<hr class="rule">'
+      + '<p class="sec">目安のプラン</p>'
+      + '<div class="plan"><span class="plan-name">'+esc(r.type.plan)+'</span>'
+      + '<span class="plan-price">'+esc(r.type.price)+'</span></div>'
+      + '<p class="p">'+esc(r.type.planWhy)+'</p>'
+      + '<p class="prices">STANDARD 68,000円／SIGNATURE 88,000円／KOKOZO 128,000円（税込）<br>追加料金はいただきません。</p>'
+      + '</div>'
+      + '<a class="btn" href="'+LINE_TALK_URL+'" target="_blank" rel="noreferrer">この結果を持って相談する</a>'
+      + '<div style="height:11px"></div>'
+      + '<a class="btn-ghost" href="'+RESERVE_URL+'" target="_blank" rel="noreferrer">出張採寸を予約する</a>'
+      + '<p class="cta-note">押し売りはいたしません。採寸だけでも構いません。<br>ご指定の場所へ伺います。</p>'
+      + '<div class="row">'
+      + '<button class="tbtn" data-act="copy">'+(state.copied?"コピーしました":"結果をコピー")+'</button>'
+      + '<button class="tbtn" data-act="restart">もう一度診断する</button>'
+      + '</div>';
+  }
+
+  h += '<p class="copy">© 2026 LIL LINK Inc.</p>';
+  app.innerHTML = h;
+}
+
+function copyResult(){
+  var r = diagnose(state.answers);
+  var lines = ["KOKOZO サイズ診断の結果","",
+    "タイプ：「"+r.type.name+"」型",
+    "推奨シルエット："+r.sil.name,
+    "目安のプラン："+r.type.plan+"（"+r.type.price+"）",
+    "年間の「ここぞ」：およそ"+r.count+"回","",
+    "採寸で見てほしいところ："];
+  r.points.forEach(function(p){ lines.push("・"+p); });
+  var text = lines.join("\n");
+
+  function done(){ state.copied = true; render();
+    setTimeout(function(){ state.copied = false; render(); }, 2200); }
+
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  } else { fallback(); }
+
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch(e){}
+    document.body.removeChild(ta);
+  }
+}
+
+app.addEventListener("click", function(e){
+  var el = e.target.closest("[data-act]");
+  if (!el) return;
+  var act = el.getAttribute("data-act");
+
+  if (act === "start"){ state.screen = "q"; render(); }
+
+  else if (act === "choose"){
+    if (state.pending) return;
+    state.pending = el.getAttribute("data-v");
+    render();
+    setTimeout(function(){
+      state.answers[QUESTIONS[state.step].id] = state.pending;
+      state.pending = null;
+      if (state.step + 1 >= QUESTIONS.length) state.screen = "result";
+      else state.step++;
+      render();
+      window.scrollTo(0,0);
+    }, 240);
+  }
+
+  else if (act === "back"){
+    if (state.step === 0) state.screen = "start"; else state.step--;
+    render();
+  }
+
+  else if (act === "copy"){ copyResult(); }
+
+  else if (act === "restart"){
+    state = { screen:"start", step:0, answers:{}, pending:null, copied:false };
+    render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
